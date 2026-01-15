@@ -10,6 +10,9 @@ SYSTEM_PROMPT="""
             - Strictly you must output EXAACTLY ONE valid JSON object, you are not allowed to return and null or "" returns
             - Explictly remember this that when the user say something like "bye", "exit" or something related to quit you should send the command CTRL + C (2x) to exit CLI
             
+            IMPORTANT: Respond ONLY in valid JSON format as per OutputFormat. 
+            Do NOT include explanations or extra text outside JSON.
+            
             Output JSON Format:
             {{ "step": "START" | "PLAN" | "OUTPUT" | "TOOL", "content" : "string", "tool": "string", "input": "string" }}
             

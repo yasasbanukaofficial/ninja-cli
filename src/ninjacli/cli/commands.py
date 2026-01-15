@@ -1,5 +1,4 @@
-import subprocess
-import shlex
+import subprocess, shlex, os
 
 FORBIDDEN_CMDS = {"rm", "del", "format", "sudo", "chmod", "chown"}
 EXIT_COMMANDS = {"exit", "quit", "bye", "stop", "leave", "ctrl+c"}
@@ -17,13 +16,14 @@ def execute_safely(cmd_str: str, allow_delete: bool = False):
         return f"Access Denied: {args[0]} is a restricted command."
     
     try: 
-        result =  subprocess.run(args, capture_output=True, text=True, timeout=30)
-        return {
-            "command": cmd_str,
-            "return_code": result.returncode,
-            "stdout": result.stdout.strip(),
-            "stderr": result.stderr.strip()
-        }
+        # result =  subprocess.run(args, capture_output=True, text=True, timeout=30)
+        # return {
+        #     "command": cmd_str,
+        #     "return_code": result.returncode,
+        #     "stdout": result.stdout.strip(),
+        #     "stderr": result.stderr.strip()
+        # }
+        return os.system(cmd_str)
     except Exception as e:
         return str(e)
     
