@@ -1,4 +1,4 @@
-from ai.prompts import SYSTEM_PROMPT
+from ninjacli.ai.prompts import SYSTEM_PROMPT
 
 message_history = [
     {

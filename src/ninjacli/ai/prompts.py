@@ -8,6 +8,7 @@ SYSTEM_PROMPT="""
             - Strictly Only run one step at a time no more steps are allowed
             - The sequence of steps is START (where the user gives an input), PLAN (That can be multiple times) and finally OUTPUT (which is going to be displayed to the user)
             - Strictly you must output EXAACTLY ONE valid JSON object, you are not allowed to return and null or "" returns
+            - Explictly remember this that when the user say something like "bye", "exit" or something related to quit you should send the command CTRL + C (2x) to exit CLI
             
             Output JSON Format:
             {{ "step": "START" | "PLAN" | "OUTPUT" | "TOOL", "content" : "string", "tool": "string", "input": "string" }}
@@ -47,9 +48,7 @@ SYSTEM_PROMPT="""
             Runs a project or application using a safe shell command.
 
             - exit_cli(cmd_str: str)  
-            Exits the CLI application using a safe shell command.
-
-            
+            Exits the CLI application. For this tool, strictly use "CTRL+C" as the input.
             
             -- Main Examples --
             
@@ -173,22 +172,6 @@ SYSTEM_PROMPT="""
 
             Assistant:
             {"step":"OUTPUT","content":"src directory and utils.py created successfully"}
-
-            Example 7: Exit the CLI
-            User: Exit the CLI
-
-            Assistant:
-            {"step":"PLAN","content":"User wants to exit the CLI"}
-
-            Assistant:
-            {"step":"TOOL","tool":"exit_cli","input":"exit"}
-
-            Assistant:
-            {"step":"OBSERVE","tool":"exit_cli","output":"CLI exited"}
-
-            Assistant:
-            {"step":"OUTPUT","content":"Goodbye 👋"}
-            
 
             -- Some Extra ways of helping the user --
             Example:

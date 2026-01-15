@@ -1,9 +1,10 @@
 import json
 from openai import OpenAI
 from dotenv import load_dotenv
-from utils.validators import OutputFormat
-from core.message_history import message_history
-from cli.tools import available_tools
+from ninjacli.utils.validators import OutputFormat
+from ninjacli.core.message_history import message_history
+from ninjacli.cli.tools import available_tools
+from ninjacli.cli.commands import EXIT_COMMANDS
 
 load_dotenv()
 
@@ -15,7 +16,14 @@ while True:
     user_input = input(">: ")
     message_history.append({"role": "user", "content": user_input})
     
-    while True:
+    if user_input.strip().lower() in EXIT_COMMANDS:
+        print(f"Exiting terminal...")
+        task_completed=True
+        break
+    
+    task_completed = False
+    
+    while not task_completed:
         response = client.chat.completions.parse(
             model="xiaomi/mimo-v2-flash:free",
             response_format=OutputFormat,
@@ -29,10 +37,10 @@ while True:
         if parsed_result.step == "START":
             print("🔥: ", parsed_result.content)
             continue
-        if parsed_result.step == "PLAN":
+        elif parsed_result.step == "PLAN":
             print("🧠: ", parsed_result.content)
             continue
-        if parsed_result.step == "TOOL":
+        elif parsed_result.step == "TOOL":
             tool_to_call = parsed_result.tool
             tool_input = parsed_result.input
             print(f"🔧: Calling tool -> {tool_to_call}({tool_input})")
@@ -42,9 +50,10 @@ while True:
             message_history.append({"role": "assistant", "content": json.dumps(
                 {"step": "OBSERVE", "input": tool_input, "output": tool_response}
             )})
+            continue
         
-        if parsed_result.step == "OUTPUT":
+        elif parsed_result.step == "OUTPUT":
             print(f"🪄: ", parsed_result.content)
-            break
+            task_completed=True
         
     print("\n\n")

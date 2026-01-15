@@ -2,6 +2,7 @@ import subprocess
 import shlex
 
 FORBIDDEN_CMDS = {"rm", "del", "format", "sudo", "chmod", "chown"}
+EXIT_COMMANDS = {"exit", "quit", "bye", "stop", "leave", "ctrl+c"}
 
 def execute_safely(cmd_str: str, allow_delete: bool = False):
     """
@@ -82,9 +83,3 @@ def build_project(cmd_str: str):
         """
         return execute_safely(cmd_str)
     
-
-def exit_cli(cmd_str: str):
-    """
-        This command exits from the cli application
-    """
-    return execute_safely(cmd_str, allow_delete=True)
