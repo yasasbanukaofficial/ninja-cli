@@ -68,3 +68,23 @@ def delete_directory(cmd_str: str):
         This command deletes a directory
     """
     return execute_safely(cmd_str, allow_delete=True)
+
+
+def run_project(cmd_str: str):
+        """
+            This command runs a project
+        """
+        return execute_safely(cmd_str)
+
+def build_project(cmd_str: str):
+        """
+            This command builds a project
+        """
+        return execute_safely(cmd_str)
+    
+
+def exit_cli(cmd_str: str):
+    """
+        This command exits from the cli application
+    """
+    return execute_safely(cmd_str, allow_delete=True)
