@@ -17,7 +17,13 @@ def execute_safely(cmd_str: str, allow_delete: bool = False):
         return f"Access Denied: {args[0]} is a restricted command."
     
     try: 
-        return subprocess.run(args, capture_output=True, text=True, timeout=30)
+        result =  subprocess.run(args, capture_output=True, text=True, timeout=30)
+        return {
+            "command": cmd_str,
+            "return_code": result.returncode,
+            "stdout": result.stdout.strip(),
+            "stderr": result.stderr.strip()
+        }
     except Exception as e:
         return str(e)
     
