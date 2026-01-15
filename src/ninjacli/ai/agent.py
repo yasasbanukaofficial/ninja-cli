@@ -32,7 +32,10 @@ while True:
     
         raw_result = response.choices[0].message.content
         message_history.append({"role": "assistant", "content": raw_result})
-        parsed_result = response.choices[0].message.parsed
+        try:
+            parsed_result = OutputFormat.model_validate_json(raw_result)
+        except Exception:
+            parsed_result = OutputFormat(step="OUTPUT", content=raw_result)
         
         if parsed_result.step == "START":
             print("🔥: ", parsed_result.content)
