@@ -16,6 +16,7 @@ def extract_json(text: str) -> str | None:
     match = re.search(r"\{.*\}", text, re.DOTALL)
     return match.group(0) if match else None
 
+
 def agent():
     while True:
         user_input = input(">: ")
