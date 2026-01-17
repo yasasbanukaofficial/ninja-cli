@@ -9,8 +9,8 @@ LOGO_ART = """
  ██   ████ ██ ██   ████  █████  ██   ██       ██████ ███████ ██ 
 """
 
-def print_simple_logo():
-    console = Console()
+def print_simple_logo(console: Console | None = None):
+    console = console or Console()
     
     colors = [
     "#f553bc",  
@@ -18,7 +18,7 @@ def print_simple_logo():
     "#f0429a",  
     "#e83a7a",  
     "#d92f5a",  
-]
+    ]
     
     lines = LOGO_ART.splitlines()
     for i, line in enumerate(lines):
