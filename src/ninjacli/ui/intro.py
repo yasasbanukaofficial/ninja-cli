@@ -47,7 +47,7 @@ def header_display(console: Console | None = None):
 
     console.clear()
     console.print("\n", header)
-    console.print(header_panel, "\n")          
+    console.print(header_panel)          
 
     progress = Progress(
         SpinnerColumn(spinner_name="bouncingBall", style="bold magenta", speed=0.1),
@@ -84,15 +84,13 @@ def header_display(console: Console | None = None):
         )
         console.print(dir_panel)
     else:
-        panel = Panel(
+        dir_panel = Panel(
             Text(
-                "• You are running Ninja CLI in your root directory! Consider running it in a project directory for security.",
+                "• Directory check passed!.",
                 style="bold white"
             ),
-            title="[bold red]CAUTION[/bold red]",
             border_style="#FF006F",
-            padding=(1, 2)
         )
-        console.print("[bold green]Directory check passed![/bold green]")
+        console.print(dir_panel)
 
 header_display()
