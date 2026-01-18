@@ -91,7 +91,6 @@ def file_exists(cmd_str: str) -> bool:
     
     return os.path.isfile(file_path)
 
-
 def delete_directory(cmd_str: str):
     """
         This command deletes a directory
