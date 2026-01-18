@@ -17,9 +17,8 @@ def extract_json(text: str) -> str | None:
     return match.group(0) if match else None
 
 
-def agent():
+def agent(user_input: str):
     while True:
-        user_input = input(">: ")
         message_history.append({"role": "user", "content": user_input})
         
         if user_input.strip().lower() in EXIT_COMMANDS:

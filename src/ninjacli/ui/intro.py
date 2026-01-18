@@ -1,5 +1,4 @@
-import os
-import time
+import os, time, readchar
 from rich.console import Console, Group, RenderableType
 from rich.panel import Panel
 from rich.text import Text
@@ -95,18 +94,80 @@ def header_display(console: Console | None = None):
         )
         console.print(dir_panel)
 
-header_display()
-
-
-def body_display(console: Console | None = None):
+def prompt_display(console: Console | None = None, prompt: str | Text = None):
     console = console or Console()
+    sys_prompt = prompt or Text.assemble(("> ", "bold red"), ("Type your message", "bold white"))
     top = Rule(style="white")
     console.print(top)
-    prompt_panel = Panel(
-        Prompt.ask(Text.assemble(("> ", "bold red"), ("Type your message", "bold white"))),
-        border_style="#FF006F",
-        padding=(1, 2)
-    )
-    console.print("\n", prompt_panel)
+    return Prompt.ask(sys_prompt)
     
-body_display()
+def api_option_display(console: Console | None = None):
+    console = console or Console()
+
+    options = [
+        ("openai", "Use OpenAI API Key"),
+        ("gemini", "Use Gemini API Key"),
+        ("openrouter", "Use OpenRouter API Key"),
+    ]
+
+    selected = 0
+
+    def render():
+        text = Text()
+        for i, (_, label) in enumerate(options):
+            if i == selected:
+                text.append(f"▶ {label}\n", style="bold black on #00FFAA")
+            else:
+                text.append(f"  {label}\n", style="white")
+
+        return Panel(
+            text,
+            title="[bold #00FFAA]Choose API Provider[/bold #00FFAA]",
+            border_style="#00FFAA",
+            padding=(1, 2),
+            box=box.ROUNDED
+        )
+
+    user_option = None
+    
+    with Live(
+        render(),
+        console=console,
+        refresh_per_second=1,
+        auto_refresh=False,
+        transient=True,
+    ) as live:
+        while True:
+            key = readchar.readkey()
+
+            if key in (readchar.key.UP, "k"):
+                selected = (selected - 1) % len(options)
+                live.update(render(), refresh=True)
+
+            elif key in (readchar.key.DOWN, "j"):
+                selected = (selected + 1) % len(options)
+                live.update(render(), refresh=True)
+
+            elif key == readchar.key.ENTER:
+                user_option = options[selected][0]
+                break
+
+            elif key in ("q", readchar.key.ESC):
+                user_option = None
+                break
+
+    if user_option == None:
+        caution_panel = Panel(
+            Text(
+            "Input an option to proceed.",
+            style="bold white"
+            ),
+            title="[bold red]CAUTION[/bold red]",
+            border_style="#FF006F",
+            padding=(1, 2)
+        )
+        console.print(caution_panel)
+        return api_option_display(console)
+    
+    return prompt_display(console, prompt=Text.assemble(("# ", "bold red"), ( "API_KEY:   ", "bold blue")))
+    
