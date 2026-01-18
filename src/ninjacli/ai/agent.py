@@ -12,7 +12,6 @@ def extract_json(text: str) -> str | None:
     Extracts the first complete JSON object and sanitizes raw newlines 
     and unescaped quotes inside strings to prevent validation errors.
     """
-    # Remove markdown code blocks
     text = re.sub(r"```json|```", "", text, flags=re.IGNORECASE).strip()
 
     start_index = text.find('{')
@@ -27,7 +26,6 @@ def extract_json(text: str) -> str | None:
     for i in range(start_index, len(text)):
         char = text[i]
         
-        # Look ahead for closing brace to help determine if we are really at the end
         if char == '"' and not escape:
             in_string = not in_string
         
@@ -36,16 +34,11 @@ def extract_json(text: str) -> str | None:
         else:
             escape = False
 
-        # --- SANITIZATION ---
         if in_string:
             if char == '\n':
                 sanitized_chars.append('\\n')
             elif char == '\r':
                 continue
-            # If we see a " that isn't escaped and isn't the final boundary, 
-            # this is usually an AI mistake in tool inputs. 
-            # However, standard JSON parsing is sensitive, so we keep the char 
-            # and let the depth tracker handle the logic.
             else:
                 sanitized_chars.append(char)
         else:
@@ -91,15 +84,13 @@ def agent(ai_option: str, messages: list):
 
     try:
         if json_text:
-            # We use model_validate_json which is strict
             parsed = OutputFormat.model_validate_json(json_text)
         else:
             parsed = OutputFormat(step="OUTPUT", content=raw)
     except ValidationError:
-        # Fallback: Try to clean quotes if the first pass failed
         try:
-            # Simple heuristic to escape internal quotes if the AI messed up the tool input
-            # This targets the common ' "input": "echo "content"" ' error
+            fixed_json = re.sub(r'(?<=: ")(.*?)(?=", ")|(?<=: ")(.*?)(?="}$)', 
+                                lambda m: m.group(0).replace('"', '\\"'), json_text, flags=re.DOTALL)
             fixed_json = re.sub(r'(?<=: ")(.*?)(?=", ")|(?<=: ")(.*?)(?="}$)', 
                                 lambda m: m.group(0).replace('"', '\\"'), json_text, flags=re.DOTALL)
             parsed = OutputFormat.model_validate_json(fixed_json)

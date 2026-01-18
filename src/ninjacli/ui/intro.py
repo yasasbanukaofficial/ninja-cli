@@ -1,4 +1,4 @@
-import os, time, readchar
+import os, time, readchar, random
 from contextlib import contextmanager
 from rich.console import Console, Group, RenderableType
 from rich.panel import Panel
@@ -127,7 +127,21 @@ def display_plan(content: str):
 
 @contextmanager
 def display_tool_call(tool_name: str, tool_input: any):
-    status_message = f"[bold yellow]Executing [cyan]{tool_name}[/cyan]..."
+    playful_messages = [
+        "Sharpening the ninja blades 🗡️",
+        "Tickling the server octopus 🐙",
+        "Bribing the syntax gremlins 🪙",
+        "Teaching cats to type 🐱⌨️",
+        "Stirring the binary soup 🍲",
+        "Convincing bytes to behave 🤝",
+        "Polishing pixels ✨",
+        "Counting invisible semicolons ;",
+        "Summoning coffee-fueled logic ☕️",
+        "Warming up the robot brain 🤖",
+    ]
+
+    chosen = random.choice(playful_messages)
+    status_message = f"[bold yellow]{chosen} — [cyan]{tool_name}[/cyan]"
     with console.status(status_message, spinner="aesthetic"):
         yield
 

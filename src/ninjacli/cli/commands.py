@@ -16,18 +16,14 @@ def execute_safely(cmd_str: str, allow_delete: bool = False):
         return "No command provided"
     
     cmd_name = args[0].lower()
-    
-    # Check if command is forbidden
+
     if cmd_name in FORBIDDEN_CMDS:
-        # If it's a delete command (rm or del) and allow_delete is explicitly True, proceed.
         if cmd_name in {"rm", "del"} and allow_delete:
             pass 
         else:
             return f"Access Denied: {cmd_name} is a restricted command."
     
     try: 
-        # Using os.system as per your current logic
-        # Note: os.system returns the exit status
         exit_code = os.system(cmd_str)
         return f"Command executed with exit code: {exit_code}"
     except Exception as e:
@@ -48,7 +44,6 @@ def update_file(cmd_str: str):
 
 def delete_file(cmd_str: str):
     """ This command deletes a file """
-    # Passed allow_delete=True to bypass the FORBIDDEN_CMDS check for 'rm'
     return execute_safely(cmd_str, allow_delete=True)
 
 def create_directory(cmd_str: str):
@@ -92,7 +87,6 @@ def file_exists(cmd_str: str) -> bool:
 
 def delete_directory(cmd_str: str):
     """ This command deletes a directory """
-    # Passed allow_delete=True to bypass the FORBIDDEN_CMDS check for 'rm'
     return execute_safely(cmd_str, allow_delete=True)
 
 def run_project(cmd_str: str):
