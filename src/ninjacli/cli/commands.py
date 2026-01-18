@@ -70,6 +70,24 @@ def update_directory(cmd_str: str):
     """
     return execute_safely(cmd_str)
 
+def directory_exists(cmd_str: str):
+    """
+        This command checks if a directory exists
+    """
+    dir_path = shlex.split(cmd_str)[-1] if shlex.split(cmd_str) else ""
+    if not dir_path:
+        return "No directory path provided"
+    return os.path.isdir(dir_path)
+
+def file_exists(cmd_str: str):
+    """
+        This command checks if a file exists
+    """
+    file_path = shlex.split(cmd_str)[-1] if shlex.split(cmd_str) else ""
+    if not file_path:
+        return "No file path provided"
+    return os.path.isfile(file_path)
+
 def delete_directory(cmd_str: str):
     """
         This command deletes a directory

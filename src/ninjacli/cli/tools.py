@@ -1,4 +1,4 @@
-from ninjacli.cli.commands import create_file, read_file, update_file, delete_file, create_directory, read_directory, update_directory, delete_directory, build_project, run_project
+from ninjacli.cli.commands import create_file, read_file, update_file, delete_file, create_directory, read_directory, update_directory, delete_directory, build_project, run_project, directory_exists, file_exists
 
 available_tools = {
     "create_file": create_file,
@@ -7,6 +7,8 @@ available_tools = {
     "delete_file": delete_file,
     "create_directory": create_directory,
     "read_directory": read_directory,
+    "directory_exists": directory_exists,
+    "file_exists": file_exists,
     "update_directory": update_directory,
     "delete_directory": delete_directory,
     "build_project": build_project,

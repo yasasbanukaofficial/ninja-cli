@@ -8,23 +8,35 @@ from ninjacli.cli.commands import EXIT_COMMANDS
 from pydantic import ValidationError
 
 load_dotenv()
-OPENROUTER_BASE_URL = os.getenv("OPENROUTER_BASE_URL")
-
-client = OpenAI(base_url=OPENROUTER_BASE_URL)
 
 def extract_json(text: str) -> str | None:
     match = re.search(r"\{.*\}", text, re.DOTALL)
     return match.group(0) if match else None
 
 
-def agent(user_input: str):
+def agent(ai_option: str, user_input: str):
+    model = None 
+    baseurl = None
+
+    if ai_option == "openai":
+        model="gpt-4o"
+    elif ai_option == "gemini":
+        model = "gemini-3-flash-preview"
+        baseurl = "https://generativelanguage.googleapis.com/v1beta/openai/"
+    elif ai_option == "openrouter":
+        model="xiaomi/mimo-v2-flash:free"
+        baseurl="https://openrouter.ai/api/v1"
+
+    client = OpenAI(base_url=baseurl)
+    
+    
     message_history.append({"role": "user", "content": user_input})
 
     task_completed = False
 
     while not task_completed:
         response = client.chat.completions.create(
-            model="xiaomi/mimo-v2-flash:free",
+            model=model,
             messages=message_history
         )
 

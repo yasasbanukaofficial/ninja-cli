@@ -169,5 +169,5 @@ def api_option_display(console: Console | None = None):
         console.print(caution_panel)
         return api_option_display(console)
     
-    return prompt_display(console, prompt=Text.assemble(("# ", "bold red"), ( "API_KEY:   ", "bold blue")))
+    return [user_option, prompt_display(console, prompt=Text.assemble(("# ", "bold red"), ( "API_KEY:   ", "bold blue")))]
     
