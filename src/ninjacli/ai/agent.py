@@ -9,13 +9,57 @@ load_dotenv()
 
 def extract_json(text: str) -> str | None:
     """
-    Extracts the first valid JSON object from AI output.
-    Handles non-greedy {} and removes ```json``` blocks if present.
+    Extracts the first complete JSON object and sanitizes raw newlines 
+    and unescaped quotes inside strings to prevent validation errors.
     """
+    # Remove markdown code blocks
     text = re.sub(r"```json|```", "", text, flags=re.IGNORECASE).strip()
 
-    match = re.search(r"\{.*?\}", text, re.DOTALL)
-    return match.group(0) if match else None
+    start_index = text.find('{')
+    if start_index == -1:
+        return None
+
+    depth = 0
+    in_string = False
+    escape = False
+    sanitized_chars = []
+
+    for i in range(start_index, len(text)):
+        char = text[i]
+        
+        # Look ahead for closing brace to help determine if we are really at the end
+        if char == '"' and not escape:
+            in_string = not in_string
+        
+        if char == '\\':
+            escape = not escape
+        else:
+            escape = False
+
+        # --- SANITIZATION ---
+        if in_string:
+            if char == '\n':
+                sanitized_chars.append('\\n')
+            elif char == '\r':
+                continue
+            # If we see a " that isn't escaped and isn't the final boundary, 
+            # this is usually an AI mistake in tool inputs. 
+            # However, standard JSON parsing is sensitive, so we keep the char 
+            # and let the depth tracker handle the logic.
+            else:
+                sanitized_chars.append(char)
+        else:
+            sanitized_chars.append(char)
+
+        if not in_string:
+            if char == '{':
+                depth += 1
+            elif char == '}':
+                depth -= 1
+                if depth == 0:
+                    return "".join(sanitized_chars)
+    
+    return None
 
 
 def agent(ai_option: str, messages: list):
@@ -43,18 +87,26 @@ def agent(ai_option: str, messages: list):
     )
 
     raw = response.choices[0].message.content
-
     json_text = extract_json(raw)
 
     try:
         if json_text:
+            # We use model_validate_json which is strict
             parsed = OutputFormat.model_validate_json(json_text)
         else:
             parsed = OutputFormat(step="OUTPUT", content=raw)
     except ValidationError:
-        parsed = OutputFormat(
-            step="ERROR",
-            content=f"Invalid JSON from AI.\nRaw output:\n{raw}"
-        )
+        # Fallback: Try to clean quotes if the first pass failed
+        try:
+            # Simple heuristic to escape internal quotes if the AI messed up the tool input
+            # This targets the common ' "input": "echo "content"" ' error
+            fixed_json = re.sub(r'(?<=: ")(.*?)(?=", ")|(?<=: ")(.*?)(?="}$)', 
+                                lambda m: m.group(0).replace('"', '\\"'), json_text, flags=re.DOTALL)
+            parsed = OutputFormat.model_validate_json(fixed_json)
+        except:
+            parsed = OutputFormat(
+                step="ERROR",
+                content=f"Invalid JSON from AI.\nRaw output:\n{raw}"
+            )
 
     yield parsed
