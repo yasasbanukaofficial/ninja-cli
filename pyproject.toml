@@ -1,10 +1,11 @@
 [project]
 name = "ninjacli"
-version = "0.1.0"
-description = "Add your description here"
+version = "0.2.1"
+description = "Ninja CLI is a high-performance terminal assistant that bridges the gap between natural language and system execution. Powered by state-of-the-art LLMs, it allows you to build, manage, and automate your development workflow using simple conversational commands."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "build>=1.4.0",
     "openai>=2.15.0",
     "pydantic>=2.12.5",
     "python-dotenv>=1.2.1",
