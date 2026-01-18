@@ -18,7 +18,7 @@ def extract_json(text: str) -> str | None:
     return match.group(0) if match else None
 
 
-def agent(ai_option: str, user_input: str):
+def agent(ai_option: str, messages: list):
     """
     Main AI agent loop.
     Yields OutputFormat objects for Ninja CLI to process each step.
@@ -37,33 +37,24 @@ def agent(ai_option: str, user_input: str):
 
     client = OpenAI(base_url=api_base_url)
 
-    message_history.append({"role": "user", "content": user_input})
+    response = client.chat.completions.create(
+        model=model,
+        messages=messages
+    )
 
-    task_completed = False
+    raw = response.choices[0].message.content
 
-    while not task_completed:
-        response = client.chat.completions.create(
-            model=model,
-            messages=message_history
+    json_text = extract_json(raw)
+
+    try:
+        if json_text:
+            parsed = OutputFormat.model_validate_json(json_text)
+        else:
+            parsed = OutputFormat(step="OUTPUT", content=raw)
+    except ValidationError:
+        parsed = OutputFormat(
+            step="ERROR",
+            content=f"Invalid JSON from AI.\nRaw output:\n{raw}"
         )
 
-        raw = response.choices[0].message.content
-        message_history.append({"role": "assistant", "content": raw})
-
-        json_text = extract_json(raw)
-
-        try:
-            if json_text:
-                parsed = OutputFormat.model_validate_json(json_text)
-            else:
-                parsed = OutputFormat(step="OUTPUT", content=raw)
-        except ValidationError:
-            parsed = OutputFormat(
-                step="ERROR",
-                content=f"Invalid JSON from AI.\nRaw output:\n{raw}"
-            )
-
-        yield parsed
-
-        if parsed.step == "OUTPUT":
-            task_completed = True
+    yield parsed
