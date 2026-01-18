@@ -3,8 +3,10 @@ import time
 from rich.console import Console, Group, RenderableType
 from rich.panel import Panel
 from rich.text import Text
+from rich.prompt import Prompt
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
 from rich.live import Live
+from rich.rule import Rule
 from rich import box
 from ninjacli.ui.logo import get_logo_text
 
@@ -86,7 +88,7 @@ def header_display(console: Console | None = None):
     else:
         dir_panel = Panel(
             Text(
-                "• Directory check passed!.",
+                "• Directory check passed!. It is recommended to run in a project based directory.",
                 style="bold white"
             ),
             border_style="#FF006F",
@@ -94,3 +96,17 @@ def header_display(console: Console | None = None):
         console.print(dir_panel)
 
 header_display()
+
+
+def body_display(console: Console | None = None):
+    console = console or Console()
+    top = Rule(style="white")
+    console.print(top)
+    prompt_panel = Panel(
+        Prompt.ask(Text.assemble(("> ", "bold red"), ("Type your message", "bold white"))),
+        border_style="#FF006F",
+        padding=(1, 2)
+    )
+    console.print("\n", prompt_panel)
+    
+body_display()
