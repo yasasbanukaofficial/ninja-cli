@@ -11,7 +11,7 @@ load_dotenv()
 
 def main():
     header_display()
-    if not file_exists(".halo"):
+    if not file_exists("../.env"):
         user_option = api_option_display()
         ai_option = user_option[0]
         api_key = user_option[1]

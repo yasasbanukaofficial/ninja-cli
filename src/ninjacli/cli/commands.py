@@ -79,21 +79,24 @@ def directory_exists(cmd_str: str):
         return "No directory path provided"
     return os.path.isdir(dir_path)
 
-def file_exists(cmd_str: str):
-    """
-        This command checks if a file exists
-    """
-    file_path = shlex.split(cmd_str)[-1] if shlex.split(cmd_str) else ""
+def file_exists(cmd_str: str) -> bool:
+    if not cmd_str or not cmd_str.strip():
+        return False 
+
+    tokens = shlex.split(cmd_str)
+    file_path = tokens[-1] if tokens else ""
+    
     if not file_path:
-        return "No file path provided"
+        return False
+    
     return os.path.isfile(file_path)
+
 
 def delete_directory(cmd_str: str):
     """
         This command deletes a directory
     """
     return execute_safely(cmd_str, allow_delete=True)
-
 
 def run_project(cmd_str: str):
         """

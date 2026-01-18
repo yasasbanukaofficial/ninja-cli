@@ -1,10 +1,8 @@
-import json, os, re
+import re
 from openai import OpenAI
 from dotenv import load_dotenv
 from ninjacli.utils.validators import OutputFormat
 from ninjacli.core.message_history import message_history
-from ninjacli.cli.tools import available_tools
-from ninjacli.cli.commands import EXIT_COMMANDS
 from pydantic import ValidationError
 
 load_dotenv()
@@ -16,18 +14,18 @@ def extract_json(text: str) -> str | None:
 
 def agent(ai_option: str, user_input: str):
     model = None 
-    baseurl = None
+    api_base_url = None
 
     if ai_option == "openai":
         model="gpt-4o"
     elif ai_option == "gemini":
         model = "gemini-3-flash-preview"
-        baseurl = "https://generativelanguage.googleapis.com/v1beta/openai/"
+        api_base_url = "https://generativelanguage.googleapis.com/v1beta/openai/"
     elif ai_option == "openrouter":
         model="xiaomi/mimo-v2-flash:free"
-        baseurl="https://openrouter.ai/api/v1"
+        api_base_url="https://openrouter.ai/api/v1"
 
-    client = OpenAI(base_url=baseurl)
+    client = OpenAI(base_url=api_base_url)
     
     
     message_history.append({"role": "user", "content": user_input})
