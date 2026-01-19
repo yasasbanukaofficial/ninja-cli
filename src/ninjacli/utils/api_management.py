@@ -8,6 +8,9 @@ def is_api_saved(selected_option: str, api_key: str) -> bool:
         content = f'OPENAI_API_KEY="{api_key}"\nAPI_OPTION="{selected_option}"\n'
         with open(halo_path, "w") as f:
             f.write(content)
+            
+        os.environ["OPENAI_API_KEY"] = api_key
+        os.environ["API_OPTION"] = selected_option
 
         return True
     return False
