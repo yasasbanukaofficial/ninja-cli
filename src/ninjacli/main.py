@@ -61,7 +61,7 @@ def main():
                         choice = ask_restriction_confirmation(tool_input)
                         if choice == "always":
                             ALWAYS_ALLOW = True
-                        elif choice == "no":
+                        elif choice == "n":
                             display_output("Command skipped by user.")
                             task_in_progress = False
                             break

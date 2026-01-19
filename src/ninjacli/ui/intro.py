@@ -157,6 +157,7 @@ def display_output(content: str):
     console.print(content)
     console.print()
 
-def ask_restriction_confirmation(command: str) -> bool:
+def ask_restriction_confirmation(command: str) -> str:
     console.print(Panel(f"[bold red]⚠️  WARNING:[/bold red] The command [yellow]'{command}'[/yellow] is restricted.", border_style="red"))
-    return Confirm.ask("Do you want to proceed?")
+    choice = Prompt.ask("Do you want to proceed? (y/n/always)", choices=["y", "n", "always"], default="n")
+    return choice
